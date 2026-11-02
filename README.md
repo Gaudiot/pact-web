@@ -23,6 +23,8 @@ The `/plans` page displays a responsive list of payment plans with title, descri
 
 The `/users` page displays fictional user names only, with a name search debounced by 350 ms and explicit pagination (five users per page). Matching ignores case and accents. Changing the search resets to the first page; clearing it restores the list. Backend integration is not implemented.
 
+The shared header links to `/users` and `/plans`, highlights the current page, and offers a hamburger disclosure menu on mobile. Escape closes the mobile menu and returns focus to its button; navigating closes the menu. Existing Clerk authentication controls remain available in the header.
+
 ## Technology stack
 
 - Next.js with the App Router
