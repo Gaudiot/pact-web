@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { AddUserDialog } from "@/components/add-user-dialog";
 
-type User = { id: string; name: string };
+type User = { id: string; name: string; email?: string };
 
 // Fictional examples until the paginated server endpoint is connected.
 const mockUsers: User[] = [
@@ -37,6 +38,10 @@ function normalizeName(value: string) {
 }
 
 export default function Users() {
+  const [allUsers, setAllUsers] = useState<User[]>(mockUsers);
+  const [creating, setCreating] = useState(false);
+  const [notification, setNotification] = useState("");
+  const addButton = useRef<HTMLButtonElement>(null);
   const [query, setQuery] = useState("");
   const [appliedQuery, setAppliedQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -53,7 +58,7 @@ export default function Users() {
     return () => clearTimeout(timeout);
   }, [query, appliedQuery]);
 
-  const filteredUsers = mockUsers.filter((user) =>
+  const filteredUsers = allUsers.filter((user) =>
     normalizeName(user.name).includes(normalizeName(appliedQuery)),
   );
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
@@ -92,8 +97,31 @@ export default function Users() {
         <p className="mt-3 max-w-xl text-base leading-7 text-stone-600 dark:text-stone-300">
           Consulte a lista ou encontre um usuário pelo nome.
         </p>
+        <button
+          ref={addButton}
+          type="button"
+          aria-haspopup="dialog"
+          onClick={() => {
+            setNotification("");
+            setCreating(true);
+          }}
+          className="mt-5 min-h-12 w-full rounded-xl bg-violet-700 px-5 text-sm font-semibold text-white hover:bg-violet-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:w-auto"
+        >
+          Adicionar usuário
+        </button>
+        <p
+          role="status"
+          className={
+            notification
+              ? "mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
+              : "sr-only"
+          }
+        >
+          {notification}
+        </p>
         <p className="mt-5 max-w-2xl border-l-2 border-violet-300 pl-4 text-sm leading-6 text-stone-600 dark:border-violet-600 dark:text-stone-300">
-          Dados de demonstração. Os nomes abaixo são fictícios.
+          Dados de demonstração. Os nomes abaixo são fictícios. Novos cadastros
+          são temporários e serão perdidos ao recarregar.
         </p>
 
         <section aria-label="Busca de usuários" className="mt-8">
@@ -191,7 +219,7 @@ export default function Users() {
               </p>
               <nav
                 aria-label="Paginação dos usuários"
-                className="grid grid-cols-2 items-center gap-2 sm:flex sm:flex-wrap sm:justify-end"
+                className="grid min-w-0 grid-cols-2 items-center gap-2 sm:flex sm:flex-wrap sm:justify-end"
               >
                 <button
                   type="button"
@@ -201,7 +229,7 @@ export default function Users() {
                 >
                   Anterior
                 </button>
-                <div className="col-span-2 row-start-2 flex justify-center gap-2 sm:contents">
+                <div className="col-span-2 row-start-2 flex min-w-0 flex-wrap justify-center gap-2 sm:contents">
                   {Array.from(
                     { length: totalPages },
                     (_, index) => index + 1,
@@ -231,6 +259,26 @@ export default function Users() {
             </footer>
           )}
         </section>
+        {creating && (
+          <AddUserDialog
+            onClose={() => {
+              setCreating(false);
+              addButton.current?.focus();
+            }}
+            onCreate={(user) => {
+              setAllUsers((current) => [
+                { ...user, id: crypto.randomUUID() },
+                ...current,
+              ]);
+              setQuery("");
+              setAppliedQuery("");
+              setPage(1);
+              setNotification(
+                "Usuário adicionado à demonstração. O cadastro será perdido ao recarregar a página.",
+              );
+            }}
+          />
+        )}
       </div>
     </main>
   );
