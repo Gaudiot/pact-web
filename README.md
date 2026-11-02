@@ -19,7 +19,7 @@ Additional administrative workflows may be introduced as requirements are define
 
 The application is at the initial scaffold stage and currently displays the Next.js starter page. The areas listed above describe the intended product scope; they are not implemented features. Backend services, persistence, authentication, and payment integrations have not been established in this repository.
 
-The `/plans` page displays a responsive list of payment plans with title, description, and example BRL prices. It uses local mock data and explicit pagination (three plans per page), with Previous, numbered page, and Next controls below the list. Server data integration and plan management are not implemented.
+The `/plans` page displays a responsive list of payment plans with title, description, and example BRL prices. It uses local mock data and explicit pagination (three plans per page), with Previous, numbered page, and Next controls below the list. The Add plan button opens an accessible native dialog with title, optional description, and a BRL price. Confirming adds the plan to the beginning of the local list and returns to page one; the addition is lost on reload. Cancel and Escape dismiss the dialog. Server integration and persistent plan management are not implemented.
 
 The `/users` page displays fictional user names only, with a name search debounced by 350 ms and explicit pagination (five users per page). Matching ignores case and accents. Changing the search resets to the first page; clearing it restores the list. Backend integration is not implemented.
 

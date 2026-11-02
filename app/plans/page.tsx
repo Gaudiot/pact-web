@@ -1,13 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { AddPlanDialog, type PlanInput } from "@/components/add-plan-dialog";
 
-type Plan = {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-};
+type Plan = PlanInput & { id: string };
 
 // Temporary examples. Replace with a paginated server response when available.
 const mockPlans: Plan[] = [
@@ -72,10 +68,14 @@ const paginationButton =
 
 export default function Plans() {
   const [page, setPage] = useState(1);
+  const [allPlans, setAllPlans] = useState<Plan[]>(mockPlans);
+  const [creating, setCreating] = useState(false);
+  const [notification, setNotification] = useState("");
+  const addButton = useRef<HTMLButtonElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
-  const totalPages = Math.ceil(mockPlans.length / pageSize);
+  const totalPages = Math.ceil(allPlans.length / pageSize);
   const firstIndex = (page - 1) * pageSize;
-  const plans = mockPlans.slice(firstIndex, firstIndex + pageSize);
+  const plans = allPlans.slice(firstIndex, firstIndex + pageSize);
 
   function changePage(nextPage: number) {
     if (nextPage < 1 || nextPage > totalPages || nextPage === page) return;
@@ -102,9 +102,32 @@ export default function Plans() {
         <p className="mt-3 max-w-xl text-base leading-7 text-stone-600 dark:text-stone-300">
           Consulte os planos disponíveis e seus valores.
         </p>
+        <button
+          ref={addButton}
+          type="button"
+          aria-haspopup="dialog"
+          onClick={() => {
+            setNotification("");
+            setCreating(true);
+          }}
+          className="mt-5 min-h-12 w-full rounded-xl bg-violet-700 px-5 text-sm font-semibold text-white hover:bg-violet-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:w-auto"
+        >
+          Adicionar plano
+        </button>
+        <p
+          role="status"
+          className={
+            notification
+              ? "mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
+              : "sr-only"
+          }
+        >
+          {notification}
+        </p>
         <p className="mt-5 max-w-2xl border-l-2 border-violet-300 pl-4 text-sm leading-6 text-stone-600 dark:border-violet-600 dark:text-stone-300">
           Dados de demonstração. Os títulos, descrições e preços abaixo são
-          exemplos temporários.
+          exemplos temporários. Novos planos ficam apenas nesta página e são
+          perdidos ao recarregar.
         </p>
 
         <section
@@ -118,7 +141,7 @@ export default function Plans() {
               className="text-sm leading-6 text-stone-600 dark:text-stone-300"
             >
               Exibindo {firstIndex + 1}–{firstIndex + plans.length} de{" "}
-              {mockPlans.length} planos
+              {allPlans.length} planos
             </p>
           </div>
           <ul className="divide-y divide-stone-200 dark:divide-stone-800">
@@ -152,7 +175,7 @@ export default function Plans() {
             </p>
             <nav
               aria-label="Paginação dos planos"
-              className="grid grid-cols-2 items-center gap-2 sm:flex sm:flex-wrap sm:justify-end"
+              className="grid min-w-0 grid-cols-2 items-center gap-2 sm:flex sm:flex-wrap sm:justify-end"
             >
               <button
                 type="button"
@@ -162,7 +185,7 @@ export default function Plans() {
               >
                 Anterior
               </button>
-              <div className="col-span-2 row-start-2 flex justify-center gap-2 sm:contents">
+              <div className="col-span-2 row-start-2 flex min-w-0 flex-wrap justify-center gap-2 sm:contents">
                 {Array.from(
                   { length: totalPages },
                   (_, index) => index + 1,
@@ -190,6 +213,24 @@ export default function Plans() {
             </nav>
           </footer>
         </section>
+        {creating && (
+          <AddPlanDialog
+            onClose={() => {
+              setCreating(false);
+              addButton.current?.focus();
+            }}
+            onCreate={(plan) => {
+              setAllPlans((current) => [
+                { ...plan, id: crypto.randomUUID() },
+                ...current,
+              ]);
+              setPage(1);
+              setNotification(
+                "Plano adicionado à demonstração. Ele será perdido ao recarregar a página.",
+              );
+            }}
+          />
+        )}
       </div>
     </main>
   );
