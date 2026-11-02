@@ -21,6 +21,8 @@ The application is at the initial scaffold stage and currently displays the Next
 
 The `/plans` page displays a responsive list of payment plans with title, description, and example BRL prices. It uses local mock data and explicit pagination (three plans per page), with Previous, numbered page, and Next controls below the list. Server data integration and plan management are not implemented.
 
+The `/users` page displays fictional user names only, with a name search debounced by 350 ms and explicit pagination (five users per page). Matching ignores case and accents. Changing the search resets to the first page; clearing it restores the list. Backend integration is not implemented.
+
 ## Technology stack
 
 - Next.js with the App Router
