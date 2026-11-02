@@ -19,6 +19,8 @@ Additional administrative workflows may be introduced as requirements are define
 
 The application is at the initial scaffold stage and currently displays the Next.js starter page. The areas listed above describe the intended product scope; they are not implemented features. Backend services, persistence, authentication, and payment integrations have not been established in this repository.
 
+The `/plans` page displays a responsive list of payment plans with title, description, and example BRL prices. It uses local mock data and explicit pagination (three plans per page), with Previous, numbered page, and Next controls below the list. Server data integration and plan management are not implemented.
+
 ## Technology stack
 
 - Next.js with the App Router
